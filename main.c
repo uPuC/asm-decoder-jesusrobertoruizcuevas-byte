@@ -1,6 +1,3 @@
-/******************************************************************************
-Prac 2 - AVR ASM OpCode Decoder
-*******************************************************************************/
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -137,9 +134,12 @@ int main()
         }
         //type 5
         else if (instruction->type5.op6 == 0x3D){ //BRBC
-            uint8_t constante = instruction->type5.k7;
-            uint8_t reg_fuente = instruction->type5.s3;
-            printf("BRBC R%d %d \n", reg_fuente, constante);
+            int constante = instruction->type5.k7;
+            if (constante & 0x40) {
+                constante |= ~0x7F;
+            }
+            uint8_t bit_status = instruction->type5.s3;
+            printf("BRBC %d %d \n", bit_status, constante);
         }
         //type 6
         else if (instruction->type6.op8 == 0x97){ // SBIW
@@ -149,7 +149,10 @@ int main()
         }
         //type 7
         else if (instruction->type7.op4 == 0x0D){ // RCAL
-            uint8_t constante = instruction->type7.k12;
+            uint16_t constante = instruction->type7.k12;
+            if (constante & 0x0800) {
+                constante |= 0xF000;
+            }
             printf("RCAL %d \n", constante);
         }
         //type 8
